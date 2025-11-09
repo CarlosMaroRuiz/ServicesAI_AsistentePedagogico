@@ -2,7 +2,7 @@
 
 El siguiente diagrama representa los tres flujos principales del sistema, que integran los servicios de **procesamiento de documentos**, **recuperación aumentada (RAG)** y **análisis mediante Machine Learning**.
 
-![Architecture Diagram](resources/architecture_diagram.png)
+![Architecture Diagram](../resources/architecture_diagram.png)
 
 ---
 
