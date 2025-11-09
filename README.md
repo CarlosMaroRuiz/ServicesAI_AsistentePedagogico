@@ -41,7 +41,7 @@ El sistema está compuesto por dos servicios principales:
 
 Ambos servicios se conectan a una base de datos PostgreSQL en AWS RDS con extensión pgvector.
 
-![Diagrama de Arquitectura](architecture_diagram.png)
+![Diagrama de Arquitectura](resources/architecture_diagram.png)
 
 ## Tecnologías Utilizadas
 
