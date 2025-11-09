@@ -103,8 +103,8 @@ llm_api/
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone <repository-url>
-cd llm_api
+git clone https://github.com/CarlosMaroRuiz/ServicesAI_AsistentePedagogico.git
+cd ServicesAI_AsistentePedagogico
 ```
 
 ### 2. Instalar Dependencias
@@ -860,6 +860,13 @@ services_LLM (8000)                    services_ML (8001 + TCP 5555)
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
+
+---
+
+## Repositorio
+
+Este proyecto está disponible en GitHub:
+[https://github.com/CarlosMaroRuiz/ServicesAI_AsistentePedagogico](https://github.com/CarlosMaroRuiz/ServicesAI_AsistentePedagogico)
 
 ---
 
