@@ -1,0 +1,410 @@
+{
+  "info": {
+    "name": "RAG API - DeepSeek",
+    "description": "Sistema RAG conversacional con DeepSeek API, LangChain y PostgreSQL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "carlos",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "System Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/info",
+              "host": ["{{base_url}}"],
+              "path": ["info"]
+            }
+          }
+        },
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload PDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/documents/upload?user_id={{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["documents", "upload"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/list?user_id={{user_id}}&status=active&page=1&page_size=10",
+              "host": ["{{base_url}}"],
+              "path": ["documents", "list"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                },
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Document by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/:document_id",
+              "host": ["{{base_url}}"],
+              "path": ["documents", ":document_id"],
+              "variable": [
+                {
+                  "key": "document_id",
+                  "value": "paste-document-id-here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Document",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/documents/:document_id",
+              "host": ["{{base_url}}"],
+              "path": ["documents", ":document_id"],
+              "variable": [
+                {
+                  "key": "document_id",
+                  "value": "paste-document-id-here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rename Document",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/:document_id/rename?new_filename=nuevo_nombre.pdf",
+              "host": ["{{base_url}}"],
+              "path": ["documents", ":document_id", "rename"],
+              "query": [
+                {
+                  "key": "new_filename",
+                  "value": "nuevo_nombre.pdf"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "document_id",
+                  "value": "paste-document-id-here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Document (Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/:document_id?hard_delete=false",
+              "host": ["{{base_url}}"],
+              "path": ["documents", ":document_id"],
+              "query": [
+                {
+                  "key": "hard_delete",
+                  "value": "false"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "document_id",
+                  "value": "paste-document-id-here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete All User Documents",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/user/:user_id/all?hard_delete=false",
+              "host": ["{{base_url}}"],
+              "path": ["documents", "user", ":user_id", "all"],
+              "query": [
+                {
+                  "key": "hard_delete",
+                  "value": "false"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents/:document_id/restore",
+              "host": ["{{base_url}}"],
+              "path": ["documents", ":document_id", "restore"],
+              "variable": [
+                {
+                  "key": "document_id",
+                  "value": "paste-document-id-here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat with RAG",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"message\": \"¿De qué trata el documento?\",\n  \"session_id\": \"session-test-123\",\n  \"use_history\": true,\n  \"max_history\": 5,\n  \"top_k\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat/",
+              "host": ["{{base_url}}"],
+              "path": ["chat", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Chat Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"title\": \"Consulta sobre documentos\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat/session",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "session"]
+            }
+          }
+        },
+        {
+          "name": "List Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/chat/sessions/:user_id?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "sessions", ":user_id"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/chat/history/:user_id?limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "history", ":user_id"],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "session-test-123",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Session Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/chat/session/:session_id/messages?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "session", ":session_id", "messages"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "session_id",
+                  "value": "session-test-123"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Clear Chat History",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/chat/history/:user_id",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "history", ":user_id"],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "session-test-123",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

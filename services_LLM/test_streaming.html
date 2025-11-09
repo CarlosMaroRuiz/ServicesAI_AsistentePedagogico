@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Pedagógico con Streaming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-area {
+            padding: 30px;
+            height: 400px;
+            overflow-y: auto;
+            background: #f7f9fc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 15px 20px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .sources {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-left: 3px solid #667eea;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .sources-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .input-area {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e0e6ed;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info {
+            padding: 15px 30px;
+            background: #fff3cd;
+            border-top: 1px solid #ffc107;
+            font-size: 13px;
+            color: #856404;
+            text-align: center;
+        }
+
+        .streaming-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Asistente Pedagógico Inteligente <span class="streaming-badge">STREAMING</span></h1>
+            <p>Respuestas en tiempo real con referencias de página</p>
+        </div>
+
+        <div class="chat-area" id="chatArea"></div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <input
+                    type="text"
+                    id="userInput"
+                    placeholder="Pregunta sobre planificación, ejercicios, materiales..."
+                    onkeypress="if(event.key==='Enter') sendMessage()"
+                >
+                <button onclick="sendMessage()" id="sendBtn">Enviar</button>
+            </div>
+        </div>
+
+        <div class="info">
+            Las respuestas aparecen palabra por palabra en tiempo real gracias a Server-Sent Events (SSE)
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const USER_ID = 'test_docente';  // Mismo user_id usado en las pruebas
+        let currentSessionId = null;
+
+        function addMessage(content, isUser = false, sources = null) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+
+            messageDiv.appendChild(contentDiv);
+
+            // Agregar fuentes si existen
+            if (sources && sources.length > 0) {
+                const sourcesDiv = document.createElement('div');
+                sourcesDiv.className = 'sources';
+                sourcesDiv.innerHTML = `
+                    <div class="sources-title">Fuentes consultadas (${sources.length}):</div>
+                    ${sources.map((s, i) =>
+                        `${i + 1}. ${s.filename} - Página ${s.chunk_index} (Score: ${s.relevance_score})`
+                    ).join('<br>')}
+                `;
+                messageDiv.appendChild(sourcesDiv);
+            }
+
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            return contentDiv;
+        }
+
+        function showTypingIndicator() {
+            const chatArea = document.getElementById('chatArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            chatArea.appendChild(typingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Deshabilitar input
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            // Mostrar mensaje del usuario
+            addMessage(message, true);
+            input.value = '';
+
+            // Mostrar indicador de escritura
+            showTypingIndicator();
+
+            try {
+                // Preparar el payload
+                const payload = {
+                    user_id: USER_ID,
+                    message: message,
+                    session_id: currentSessionId,
+                    use_history: true,
+                    top_k: 3
+                };
+
+                // Hacer la petición con fetch + ReadableStream
+                const response = await fetch(`${API_URL}/chat/stream`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Eliminar indicador de escritura
+                removeTypingIndicator();
+
+                // Crear elemento para la respuesta del asistente
+                const responseDiv = addMessage('', false);
+                let fullResponse = '';
+                let sources = null;
+
+                // Leer el stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    // Decodificar chunk
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+
+                                if (data.type === 'sources') {
+                                    sources = data.content;
+                                } else if (data.type === 'content') {
+                                    fullResponse += data.content;
+                                    responseDiv.textContent = fullResponse;
+                                    // Auto-scroll
+                                    document.getElementById('chatArea').scrollTop =
+                                        document.getElementById('chatArea').scrollHeight;
+                                } else if (data.type === 'done') {
+                                    currentSessionId = data.session_id;
+                                    // Agregar fuentes al final
+                                    if (sources) {
+                                        const sourcesDiv = document.createElement('div');
+                                        sourcesDiv.className = 'sources';
+                                        sourcesDiv.innerHTML = `
+                                            <div class="sources-title">Fuentes consultadas (${sources.length}):</div>
+                                            ${sources.map((s, i) =>
+                                                `${i + 1}. ${s.filename} - Chunk ${s.chunk_index} (Score: ${s.relevance_score})`
+                                            ).join('<br>')}
+                                        `;
+                                        responseDiv.parentElement.appendChild(sourcesDiv);
+                                    }
+                                } else if (data.type === 'error') {
+                                    responseDiv.textContent = `Error: ${data.content}`;
+                                    responseDiv.style.color = 'red';
+                                }
+                            } catch (e) {
+                                console.error('Error parsing JSON:', e);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage(`Error: ${error.message}`, false);
+                console.error('Error:', error);
+            } finally {
+                // Rehabilitar input
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        // Auto-focus en el input al cargar
+        document.getElementById('userInput').focus();
+
+        // Mensaje de bienvenida
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addMessage('¡Hola! Soy tu Asistente Pedagógico Inteligente. Pregúntame sobre ejercicios, materiales didácticos, consejos pedagógicos o planificación de clases. Las respuestas incluirán referencias específicas de página.', false);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
