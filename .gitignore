@@ -157,7 +157,7 @@ ipython_config.py
 *.hdf5
 *.joblib
 *.model
-models/
+
 checkpoints/
 
 # Data files
